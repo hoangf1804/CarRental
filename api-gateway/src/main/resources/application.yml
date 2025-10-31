@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  spring:
+    cloud:
+      gateway:
+        routes:
+          - id: rental-service
+            uri: lb://rental-service
+            predicates:
+              - Path=/api/rental/**
+          - id: payment-service
+            uri: lb://payment-service
+            predicates:
+              - Path=/api/payment/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/

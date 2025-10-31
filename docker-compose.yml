@@ -1,0 +1,124 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    networks:
+      - rentalcar_rental-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    ports:
+      - "9092:9092"
+    networks:
+      - rentalcar_rental-network
+
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411"   # Cổng mặc định của Zipkin
+    networks:
+      - rentalcar_rental-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.0.1
+    container_name: keycloak
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - "8085:8080"
+    networks:
+      - rentalcar_rental-network
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rentaldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rentalcar_rental-network
+
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - rentalcar_rental-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      - discovery-server
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/  # Địa chỉ Eureka
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true  # Đảm bảo Gateway đăng ký vào Eureka
+      - EUREKA_CLIENT_FETCH_REGISTRY=true  # Đảm bảo Gateway có thể lấy danh sách service
+    networks:
+      - rentalcar_rental-network
+
+  rental-service:
+    build: ./rental-service
+    container_name: rental-service
+    depends_on:
+      - discovery-server
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rentaldb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+    ports:
+      - "8081:8081"
+    networks:
+      - rentalcar_rental-network
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    depends_on:
+      - discovery-server
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/paymentdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+    ports:
+      - "8082:8082"
+    networks:
+      - rentalcar_rental-network
+volumes:
+  postgres-data:
+
+networks:
+  rentalcar_rental-network:
+    external: true
