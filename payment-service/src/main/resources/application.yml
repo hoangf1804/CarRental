@@ -1,0 +1,57 @@
+server:
+  port: 8082
+
+eureka:
+
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://discovery-server:8761/eureka
+  eureka:
+    instance:
+      prefer-ip-address: true
+      non-secure-port: 8082
+      metadata-map:
+        instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+spring:
+  application:
+    name: payment-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8085/auth/realms/RentACarMicroservice/protocol/openid-connect/certs
+  zipkin:
+    base-url: http://zipkin:9411
+  datasource:
+    password: postgres
+    url: jdbc:postgresql://postgres:5432/paymentdb
+    username: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      javax:
+        persistence:
+          validation:
+            mode: none
+    show-sql: true
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
