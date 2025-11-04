@@ -6,11 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="khởi tạo service payment cấu hình port cho service">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rental-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/rental-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$/config-server">
@@ -51,12 +55,12 @@
     &quot;assignee&quot;: &quot;hoangf1804&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/hoangf1804/CarRental.git&quot;,
-    &quot;accountId&quot;: &quot;76bde0be-6b6f-4f23-8393-fc508fb986ce&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/hoangf1804/CarRental.git",
+    "accountId": "4b9d40b9-7015-48a7-9e0c-7cbee1726aff"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -68,6 +72,7 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="$PROJECT_DIR$/../../../xamp/php/php.exe" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -122,10 +127,6 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <option name="filePath" />
-      <method v="2" />
     </configuration>
     <configuration name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
@@ -235,6 +236,7 @@
       <workItem from="1762062093091" duration="186000" />
       <workItem from="1762062352178" duration="1534000" />
       <workItem from="1762178107361" duration="126000" />
+      <workItem from="1762253651920" duration="300000" />
     </task>
     <task id="LOCAL-00001" summary="khởi tạo service payment cấu hình port cho service">
       <option name="closed" value="true" />
