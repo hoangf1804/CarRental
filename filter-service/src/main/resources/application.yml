@@ -15,7 +15,7 @@ spring:
   data:
     mongodb:
       database: filterdb
-      uri: mongodb://localhost:27017
+      uri: mongodb://mongo:27017
     redis:
       host: redis
   application:
