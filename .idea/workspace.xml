@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="khởi tạo service payment cấu hình port cho service">
-      <change afterPath="$PROJECT_DIR$/inventory-service/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rental-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/rental-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +58,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/hoangf1804/CarRental.git",
-    "accountId": "5bc0a1a6-9a66-4f86-862f-2792ba1c10d6"
+    "accountId": "4b9d40b9-7015-48a7-9e0c-7cbee1726aff"
   }
 }]]></component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -122,7 +121,7 @@
       <recent name="D:\Java\RentalCar" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.DiscoveryServerApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="RentalCar" />
       <method v="2">
@@ -210,7 +209,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
       </set>
     </attachedChunks>
   </component>
