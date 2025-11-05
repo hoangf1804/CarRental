@@ -1,6 +1,6 @@
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -10,7 +10,7 @@ services:
       - rentalcar_rental-network
 
   kafka:
-    image: confluentinc/cp-kafka:7.4.0
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
     depends_on:
       - zookeeper
@@ -22,6 +22,16 @@ services:
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     ports:
       - "9092:9092"
+    networks:
+      - rentalcar_rental-network
+
+  mongo:
+    image: mongo:5.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
     networks:
       - rentalcar_rental-network
 
@@ -122,8 +132,11 @@ services:
     container_name: filter-service
     depends_on:
       - discovery-server
+      - mongo
+      - zookeeper
+      - kafka
     environment:
-      SPRING_DATASOURCE_URL: mongodb://localhost:27017
+      SPRING_DATASOURCE_URL: mongodb://mongo:27017
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
