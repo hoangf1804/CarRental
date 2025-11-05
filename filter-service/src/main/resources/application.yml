@@ -6,7 +6,7 @@ eureka:
     fetchRegistry: true
     registerWithEureka: true
     serviceUrl:
-      defaultZone: http://discovery-server:9000/eureka
+      defaultZone: http://discovery-server:8761/eureka
   instance:
     instance-id: ${spring.application.name}:${instanceId:${random.value}}
     preferIpAddress: true
@@ -20,6 +20,12 @@ spring:
       host: redis
   application:
     name: filter-service
+  cloud:
+    config:
+      enabled: false
+  config:
+    import:
+      optional:classpath:
   security:
     oauth2:
       resourceserver:
