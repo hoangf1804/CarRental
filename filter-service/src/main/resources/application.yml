@@ -1,0 +1,55 @@
+server:
+  port: 8084
+
+eureka:
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://discovery-server:9000/eureka
+  instance:
+    instance-id: ${spring.application.name}:${instanceId:${random.value}}
+    preferIpAddress: true
+
+spring:
+  data:
+    mongodb:
+      database: filterdb
+      uri: mongodb://localhost:27017
+    redis:
+      host: redis
+  application:
+    name: filter-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/auth/realms/RentACarMicroservice/protocol/openid-connect/certs
+  zipkin:
+    base-url: http://zipkin:9411
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      bootstrap-servers: kafka:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
