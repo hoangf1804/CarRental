@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="khởi tạo service payment cấu hình port cho service">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/filter-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/filter-service/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,12 +55,12 @@
     &quot;assignee&quot;: &quot;hoangf1804&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/hoangf1804/CarRental.git&quot;,
-    &quot;accountId&quot;: &quot;4b9d40b9-7015-48a7-9e0c-7cbee1726aff&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/hoangf1804/CarRental.git",
+    "accountId": "76bde0be-6b6f-4f23-8393-fc508fb986ce"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -237,6 +237,7 @@
       <workItem from="1762062352178" duration="1534000" />
       <workItem from="1762178107361" duration="126000" />
       <workItem from="1762253651920" duration="300000" />
+      <workItem from="1762417281737" duration="1521000" />
     </task>
     <task id="LOCAL-00001" summary="khởi tạo service payment cấu hình port cho service">
       <option name="closed" value="true" />

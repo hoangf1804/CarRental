@@ -29,9 +29,22 @@ services:
     image: mongo:5.0
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27017:27017"  # Mở cổng MongoDB để kết nối
     volumes:
-      - mongo-data:/data/db
+      - mongo-data:/data/db  # Lưu trữ dữ liệu MongoDB vào volume
+    networks:
+      - rentalcar_rental-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo  # Địa chỉ MongoDB service
+      - ME_CONFIG_MONGODB_PORT=27017    # Cổng kết nối MongoDB
+      - ME_CONFIG_MONGODB_ADMINUSERNAME= # Không cần username nếu không có mật khẩu
+      - ME_CONFIG_MONGODB_ADMINPASSWORD= # Không cần mật khẩu nếu không cấu hình
+    ports:
+      - "8088:8088"  # Port của Mongo Express
     networks:
       - rentalcar_rental-network
 
@@ -40,7 +53,7 @@ services:
     image: openzipkin/zipkin:latest
     container_name: zipkin
     ports:
-      - "9411:9411"   # Cổng mặc định của Zipkin
+      - "9411:9411"
     networks:
       - rentalcar_rental-network
 
@@ -136,9 +149,7 @@ services:
       - zookeeper
       - kafka
     environment:
-      SPRING_DATASOURCE_URL: mongodb://mongo:27017
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/filterdb
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
       EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
     ports:
@@ -147,7 +158,6 @@ services:
       - rentalcar_rental-network
 volumes:
   postgres-data:
-
 networks:
   rentalcar_rental-network:
     external: true
