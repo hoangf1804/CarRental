@@ -16,6 +16,10 @@ spring:
             uri: lb://payment-service
             predicates:
               - Path=/api/payment/**
+          - id: filter-service
+            uri: lb://filter-service
+            predicates:
+              - Path=/api/filter/**
       discovery:
         locator:
           enabled: true

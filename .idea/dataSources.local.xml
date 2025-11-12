@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-252.26830.84">
+  <component name="dataSourceStorageLocal" created-in="IU-251.25410.129">
     <data-source name="inventorydb@localhost" uuid="37b21850-b11a-4e9d-9263-42018e18d4f3">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
       <user-name>postgres</user-name>
