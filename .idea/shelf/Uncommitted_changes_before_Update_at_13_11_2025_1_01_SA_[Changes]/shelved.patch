@@ -1,0 +1,297 @@
+Index: docker-compose.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>services:\r\n  zookeeper:\r\n    image: confluentinc/cp-zookeeper:7.5.0\r\n    container_name: zookeeper\r\n    environment:\r\n      - ALLOW_ANONYMOUS_LOGIN=yes\r\n    ports:\r\n      - \"2181:2181\"\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  kafka:\r\n    image: confluentinc/cp-kafka:7.5.0\r\n    container_name: kafka\r\n    depends_on:\r\n      - zookeeper\r\n    environment:\r\n      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181\r\n      - ALLOW_PLAINTEXT_LISTENER=yes\r\n      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092\r\n      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092\r\n      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true\r\n    ports:\r\n      - \"9092:9092\"\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  mongo:\r\n    image: mongo:5.0\r\n    container_name: mongo\r\n    ports:\r\n      - \"27017:27017\"\r\n    volumes:\r\n      - mongo-data:/data/db\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n\r\n  zipkin:\r\n    image: openzipkin/zipkin:latest\r\n    container_name: zipkin\r\n    ports:\r\n      - \"9411:9411\"   # Cổng mặc định của Zipkin\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  keycloak:\r\n    image: quay.io/keycloak/keycloak:21.0.1\r\n    container_name: keycloak\r\n    command: start-dev\r\n    environment:\r\n      - KEYCLOAK_ADMIN=admin\r\n      - KEYCLOAK_ADMIN_PASSWORD=admin\r\n    ports:\r\n      - \"8085:8080\"\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  postgres:\r\n    image: postgres:15\r\n    container_name: postgres\r\n    environment:\r\n      POSTGRES_USER: postgres\r\n      POSTGRES_PASSWORD: postgres\r\n      POSTGRES_DB: rentaldb\r\n    ports:\r\n      - \"5432:5432\"\r\n    volumes:\r\n      - postgres-data:/var/lib/postgresql/data\r\n      - ./init.sql:/docker-entrypoint-initdb.d/init.sql\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  discovery-server:\r\n    build: ./discovery-server\r\n    container_name: discovery-server\r\n    ports:\r\n      - \"8761:8761\"\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  api-gateway:\r\n    build: ./api-gateway\r\n    container_name: api-gateway\r\n    depends_on:\r\n      - discovery-server\r\n    ports:\r\n      - \"8080:8080\"\r\n    environment:\r\n      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/  # Địa chỉ Eureka\r\n      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true  # Đảm bảo Gateway đăng ký vào Eureka\r\n      - EUREKA_CLIENT_FETCH_REGISTRY=true  # Đảm bảo Gateway có thể lấy danh sách service\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  rental-service:\r\n    build: ./rental-service\r\n    container_name: rental-service\r\n    depends_on:\r\n      - discovery-server\r\n      - postgres\r\n    environment:\r\n      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rentaldb\r\n      SPRING_DATASOURCE_USERNAME: postgres\r\n      SPRING_DATASOURCE_PASSWORD: postgres\r\n      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/\r\n      EUREKA_CLIENT_REGISTER_WITH_EUREKA: \"true\"\r\n    ports:\r\n      - \"8081:8081\"\r\n    networks:\r\n      - rentalcar_rental-network\r\n\r\n  payment-service:\r\n    build: ./payment-service\r\n    container_name: payment-service\r\n    depends_on:\r\n      - discovery-server\r\n      - postgres\r\n    environment:\r\n      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/paymentdb\r\n      SPRING_DATASOURCE_USERNAME: postgres\r\n      SPRING_DATASOURCE_PASSWORD: postgres\r\n      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/\r\n      EUREKA_CLIENT_REGISTER_WITH_EUREKA: \"true\"\r\n    ports:\r\n      - \"8082:8082\"\r\n    networks:\r\n      - rentalcar_rental-network\r\n    \r\n  filter-service:\r\n    build: ./filter-service\r\n    container_name: filter-service\r\n    depends_on:\r\n      - discovery-server\r\n      - mongo\r\n      - zookeeper\r\n      - kafka\r\n    environment:\r\n      SPRING_DATASOURCE_URL: mongodb://mongo:27017\r\n      SPRING_DATASOURCE_USERNAME: postgres\r\n      SPRING_DATASOURCE_PASSWORD: postgres\r\n      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/\r\n      EUREKA_CLIENT_REGISTER_WITH_EUREKA: \"true\"\r\n    ports:\r\n      - \"8084:8084\"\r\n    networks:\r\n      - rentalcar_rental-network\r\nvolumes:\r\n  postgres-data:\r\n\r\nnetworks:\r\n  rentalcar_rental-network:\r\n    external: true\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docker-compose.yml b/docker-compose.yml
+--- a/docker-compose.yml	(revision e1679adacacf41276049901d554b6f3a0d22c65e)
++++ b/docker-compose.yml	(date 1762970245826)
+@@ -1,6 +1,6 @@
+ services:
+   zookeeper:
+-    image: confluentinc/cp-zookeeper:7.5.0
++    image: confluentinc/cp-zookeeper:latest
+     container_name: zookeeper
+     environment:
+       - ALLOW_ANONYMOUS_LOGIN=yes
+@@ -10,7 +10,7 @@
+       - rentalcar_rental-network
+ 
+   kafka:
+-    image: confluentinc/cp-kafka:7.5.0
++    image: confluentinc/cp-kafka:7.4.0
+     container_name: kafka
+     depends_on:
+       - zookeeper
+@@ -25,16 +25,6 @@
+     networks:
+       - rentalcar_rental-network
+ 
+-  mongo:
+-    image: mongo:5.0
+-    container_name: mongo
+-    ports:
+-      - "27017:27017"
+-    volumes:
+-      - mongo-data:/data/db
+-    networks:
+-      - rentalcar_rental-network
+-
+ 
+   zipkin:
+     image: openzipkin/zipkin:latest
+@@ -132,11 +122,8 @@
+     container_name: filter-service
+     depends_on:
+       - discovery-server
+-      - mongo
+-      - zookeeper
+-      - kafka
+     environment:
+-      SPRING_DATASOURCE_URL: mongodb://mongo:27017
++      SPRING_DATASOURCE_URL: mongodb://localhost:27017
+       SPRING_DATASOURCE_USERNAME: postgres
+       SPRING_DATASOURCE_PASSWORD: postgres
+       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+Index: filter-service/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8084\r\n\r\neureka:\r\n  client:\r\n    fetchRegistry: true\r\n    registerWithEureka: true\r\n    serviceUrl:\r\n      defaultZone: http://discovery-server:8761/eureka\r\n  instance:\r\n    instance-id: ${spring.application.name}:${instanceId:${random.value}}\r\n    preferIpAddress: true\r\n\r\nspring:\r\n  data:\r\n    mongodb:\r\n      database: filterdb\r\n      uri: mongodb://mongo:27017\r\n    redis:\r\n      host: redis\r\n  application:\r\n    name: filter-service\r\n  cloud:\r\n    config:\r\n      enabled: false\r\n  config:\r\n    import:\r\n      optional:classpath:\r\n  security:\r\n    oauth2:\r\n      resourceserver:\r\n        jwt:\r\n          jwk-set-uri: http://keycloak:8080/auth/realms/RentACarMicroservice/protocol/openid-connect/certs\r\n  zipkin:\r\n    base-url: http://zipkin:9411\r\n  kafka:\r\n    consumer:\r\n      auto-offset-reset: earliest\r\n      bootstrap-servers: kafka:9092\r\n      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer\r\n      properties:\r\n        spring:\r\n          json:\r\n            trusted:\r\n              packages: \"*\"\r\n      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer\r\n\r\nmanagement:\r\n  endpoint:\r\n    metrics:\r\n      enabled: true\r\n    prometheus:\r\n      enabled: true\r\n  endpoints:\r\n    web:\r\n      exposure:\r\n        include: \"*\"\r\n  metrics:\r\n    export:\r\n      prometheus:\r\n        enabled: true
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/filter-service/src/main/resources/application.yml b/filter-service/src/main/resources/application.yml
+--- a/filter-service/src/main/resources/application.yml	(revision e1679adacacf41276049901d554b6f3a0d22c65e)
++++ b/filter-service/src/main/resources/application.yml	(date 1762970223255)
+@@ -14,8 +14,7 @@
+ spring:
+   data:
+     mongodb:
+-      database: filterdb
+-      uri: mongodb://mongo:27017
++      uri: mongodb://mongo:27017/filterdb
+     redis:
+       host: redis
+   application:
+Index: invoice-service/Dockerfile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/invoice-service/Dockerfile b/invoice-service/Dockerfile
+new file mode 100644
+--- /dev/null	(date 1762970223255)
++++ b/invoice-service/Dockerfile	(date 1762970223255)
+@@ -0,0 +1,4 @@
++FROM openjdk:17-jdk-slim
++WORKDIR /app
++COPY target/invoice-service-0.0.1-SNAPSHOT.jar /app/invoice-service.jar
++ENTRYPOINT ["java", "-jar", "/app/api-gateway.jar"]
+Index: .idea/dataSources.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+new file mode 100644
+--- /dev/null	(date 1762970223249)
++++ b/.idea/dataSources.xml	(date 1762970223249)
+@@ -0,0 +1,64 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
++    <data-source source="LOCAL" name="inventorydb@localhost" uuid="37b21850-b11a-4e9d-9263-42018e18d4f3">
++      <driver-ref>postgresql</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <remarks>$PROJECT_DIR$/inventory-service/src/main/resources/application.yml</remarks>
++      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
++      <jdbc-url>jdbc:postgresql://localhost:5432/inventorydb</jdbc-url>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++    <data-source source="LOCAL" name="rentaldb@postgres" uuid="4350bcc0-7901-4633-b966-76a5dccaacf6">
++      <driver-ref>postgresql</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <remarks>$PROJECT_DIR$/rental-service/src/main/resources/application.yml</remarks>
++      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
++      <jdbc-url>jdbc:postgresql://postgres:5432/rentaldb</jdbc-url>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++    <data-source source="LOCAL" name="filterdb@mongo" uuid="a99ff16b-b2ff-4462-aaf5-043f3595c025">
++      <driver-ref>mongo.4</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <remarks>$PROJECT_DIR$/filter-service/src/main/resources/application.yml</remarks>
++      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
++      <jdbc-url>mongodb://mongo:27017/filterdb</jdbc-url>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++    <data-source source="LOCAL" name="invoicedb@localhost" uuid="edb97f51-4f90-408b-a10b-cc1bfb4fcd81">
++      <driver-ref>postgresql</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <remarks>$PROJECT_DIR$/invoice-service/src/main/resources/application.yml</remarks>
++      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
++      <jdbc-url>jdbc:postgresql://localhost:5432/invoicedb</jdbc-url>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++    <data-source source="LOCAL" name="paymentdb@postgres" uuid="c885541a-bbc6-48f4-8b18-dc22ad8b6969">
++      <driver-ref>postgresql</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <remarks>$PROJECT_DIR$/payment-service/src/main/resources/application.yml</remarks>
++      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
++      <jdbc-url>jdbc:postgresql://postgres:5432/paymentdb</jdbc-url>
++      <jdbc-additional-properties>
++        <property name="com.intellij.clouds.kubernetes.db.host.port" />
++        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
++        <property name="com.intellij.clouds.kubernetes.db.container.port" />
++      </jdbc-additional-properties>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++    <data-source source="LOCAL" name="0@redis" uuid="70bf5524-e260-430a-b1b8-2870c3792f3f">
++      <driver-ref>redis</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <remarks>$PROJECT_DIR$/filter-service/src/main/resources/application.yml</remarks>
++      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
++      <jdbc-url>jdbc:redis://redis:6379/0</jdbc-url>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/dataSources.local.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.local.xml b/.idea/dataSources.local.xml
+new file mode 100644
+--- /dev/null	(date 1762970262328)
++++ b/.idea/dataSources.local.xml	(date 1762970262328)
+@@ -0,0 +1,33 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="dataSourceStorageLocal" created-in="IU-252.26830.84">
++    <data-source name="inventorydb@localhost" uuid="37b21850-b11a-4e9d-9263-42018e18d4f3">
++      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
++      <user-name>postgres</user-name>
++      <schema-mapping />
++    </data-source>
++    <data-source name="rentaldb@postgres" uuid="4350bcc0-7901-4633-b966-76a5dccaacf6">
++      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
++      <user-name>postgres</user-name>
++      <schema-mapping />
++    </data-source>
++    <data-source name="filterdb@mongo" uuid="a99ff16b-b2ff-4462-aaf5-043f3595c025">
++      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MONGO" />
++      <schema-mapping />
++    </data-source>
++    <data-source name="invoicedb@localhost" uuid="edb97f51-4f90-408b-a10b-cc1bfb4fcd81">
++      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
++      <user-name>postgres</user-name>
++      <schema-mapping />
++    </data-source>
++    <data-source name="paymentdb@postgres" uuid="c885541a-bbc6-48f4-8b18-dc22ad8b6969">
++      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
++      <user-name>postgres</user-name>
++      <schema-mapping />
++    </data-source>
++    <data-source name="0@redis" uuid="70bf5524-e260-430a-b1b8-2870c3792f3f">
++      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="REDIS" />
++      <schema-mapping />
++    </data-source>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"c45f40b4-a39e-482c-af78-7303b6351353\" name=\"Changes\" comment=\"khởi tạo service payment cấu hình port cho service\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/filter-service/src/main/resources/application.yml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/filter-service/src/main/resources/application.yml\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ComposerSettings\">\r\n    <execution />\r\n  </component>\r\n  <component name=\"ExternalProjectsData\">\r\n    <projectState path=\"$PROJECT_DIR$/config-server\">\r\n      <ProjectState />\r\n    </projectState>\r\n  </component>\r\n  <component name=\"ExternalProjectsManager\">\r\n    <system id=\"GRADLE\">\r\n      <state>\r\n        <projects_view>\r\n          <tree_state>\r\n            <expand>\r\n              <path>\r\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\r\n                <item name=\"config-server\" type=\"f1a62948:ProjectNode\" />\r\n              </path>\r\n            </expand>\r\n            <select />\r\n          </tree_state>\r\n        </projects_view>\r\n      </state>\r\n    </system>\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n        <option value=\"Dockerfile\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;hoangf1804&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/hoangf1804/CarRental.git&quot;,\r\n    &quot;accountId&quot;: &quot;4b9d40b9-7015-48a7-9e0c-7cbee1726aff&quot;\r\n  }\r\n}</component>\r\n  <component name=\"KubernetesApiPersistence\">{}</component>\r\n  <component name=\"KubernetesApiProvider\">{\r\n  &quot;isMigrated&quot;: true\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"PhpWorkspaceProjectConfiguration\" interpreter_name=\"$PROJECT_DIR$/../../../xamp/php/php.exe\" />\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 3\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"34kNI30tWFrOZRwvqsHSeVWdbhJ\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Gradle.Build config-server.executor&quot;: &quot;Run&quot;,\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,\r\n    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,\r\n    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,\r\n    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;Spring Boot.ApiGatewayApplication.executor&quot;: &quot;Run&quot;,\r\n    &quot;Spring Boot.DiscoveryServerApplication.executor&quot;: &quot;Run&quot;,\r\n    &quot;Spring Boot.RentalCarApplication.executor&quot;: &quot;Run&quot;,\r\n    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;D:/Java/RentalCar&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,\r\n    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,\r\n    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,\r\n    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,\r\n    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,\r\n    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"D:\\Java\\RentalCar\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Spring Boot.DiscoveryServerApplication\">\r\n    <configuration default=\"true\" type=\"JetRunConfigurationType\">\r\n      <module name=\"RentalCar\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"ApiGatewayApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <option name=\"FRAME_DEACTIVATION_UPDATE_POLICY\" value=\"UpdateClassesAndResources\" />\r\n      <module name=\"api-gateway\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.example.apigateway.ApiGatewayApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"ConfigServerApplication (1)\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"config-server\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.example.configserver.ConfigServerApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"ConfigServerApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"config-server.main\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.example.configserver.ConfigServerApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"DiscoveryServerApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.example.discoveryserver.DiscoveryServerApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"FilterServiceApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"filter-service\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.kodlamaio.filterservice.FilterServiceApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"InventoryServiceApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"inventory-service\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.kodlamaio.inventoryservice.InventoryServiceApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"InvoiceServiceApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"invoice-service\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.kodlamaio.invoiceservice.InvoiceServiceApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"PaymentServiceApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"payment-service\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.kodlamaio.paymentservice.PaymentServiceApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"RentalCarApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"config-server\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.example.configserver.RentalCarApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"RentalServiceApplication (1)\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"rental-service\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.kodlamaio.rentalservice.RentalServiceApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"RentalServiceApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"rental-service\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.example.rentalservice.RentalServiceApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"c45f40b4-a39e-482c-af78-7303b6351353\" name=\"Changes\" comment=\"\" />\r\n      <created>1761753529290</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1761753529290</updated>\r\n      <workItem from=\"1761753530271\" duration=\"489000\" />\r\n      <workItem from=\"1761754033132\" duration=\"13830000\" />\r\n      <workItem from=\"1761817915561\" duration=\"151000\" />\r\n      <workItem from=\"1761818086475\" duration=\"14000\" />\r\n      <workItem from=\"1761818127621\" duration=\"501000\" />\r\n      <workItem from=\"1761828691038\" duration=\"5559000\" />\r\n      <workItem from=\"1761834766377\" duration=\"9647000\" />\r\n      <workItem from=\"1761872845822\" duration=\"2196000\" />\r\n      <workItem from=\"1761875199607\" duration=\"12529000\" />\r\n      <workItem from=\"1761892796833\" duration=\"7204000\" />\r\n      <workItem from=\"1761901127070\" duration=\"6545000\" />\r\n      <workItem from=\"1761921719903\" duration=\"4872000\" />\r\n      <workItem from=\"1762062093091\" duration=\"186000\" />\r\n      <workItem from=\"1762062352178\" duration=\"1534000\" />\r\n      <workItem from=\"1762178107361\" duration=\"126000\" />\r\n      <workItem from=\"1762253651920\" duration=\"300000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"khởi tạo service payment cấu hình port cho service\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1762063192183</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1762063192184</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"khởi tạo service payment cấu hình port cho service\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1762063275897</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1762063275897</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"khởi tạo service payment cấu hình port cho service\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1762355270989</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1762355270989</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"4\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"khởi tạo service payment cấu hình port cho service\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"khởi tạo service payment cấu hình port cho service\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision e1679adacacf41276049901d554b6f3a0d22c65e)
++++ b/.idea/workspace.xml	(date 1762970307616)
+@@ -5,8 +5,9 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="khởi tạo service payment cấu hình port cho service">
++      <change afterPath="$PROJECT_DIR$/inventory-service/src/main/resources/application.yml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/filter-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/filter-service/src/main/resources/application.yml" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -58,7 +59,7 @@
+   <component name="GithubPullRequestsUISettings">{
+   &quot;selectedUrlAndAccountId&quot;: {
+     &quot;url&quot;: &quot;https://github.com/hoangf1804/CarRental.git&quot;,
+-    &quot;accountId&quot;: &quot;4b9d40b9-7015-48a7-9e0c-7cbee1726aff&quot;
++    &quot;accountId&quot;: &quot;5bc0a1a6-9a66-4f86-862f-2792ba1c10d6&quot;
+   }
+ }</component>
+   <component name="KubernetesApiPersistence">{}</component>
+@@ -121,7 +122,7 @@
+       <recent name="D:\Java\RentalCar" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="Spring Boot.DiscoveryServerApplication">
++  <component name="RunManager" selected="Spring Boot.ApiGatewayApplication">
+     <configuration default="true" type="JetRunConfigurationType">
+       <module name="RentalCar" />
+       <method v="2">
+@@ -209,8 +210,7 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
++        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -254,15 +254,7 @@
+       <option name="project" value="LOCAL" />
+       <updated>1762063275897</updated>
+     </task>
+-    <task id="LOCAL-00003" summary="khởi tạo service payment cấu hình port cho service">
+-      <option name="closed" value="true" />
+-      <created>1762355270989</created>
+-      <option name="number" value="00003" />
+-      <option name="presentableId" value="LOCAL-00003" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1762355270989</updated>
+-    </task>
+-    <option name="localTasksCounter" value="4" />
++    <option name="localTasksCounter" value="3" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+Index: api-gateway/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8080\r\n\r\nspring:\r\n  application:\r\n    name: api-gateway\r\n  spring:\r\n    cloud:\r\n      gateway:\r\n        routes:\r\n          - id: rental-service\r\n            uri: lb://rental-service\r\n            predicates:\r\n              - Path=/api/rental/**\r\n          - id: payment-service\r\n            uri: lb://payment-service\r\n            predicates:\r\n              - Path=/api/payment/**\r\n      discovery:\r\n        locator:\r\n          enabled: true\r\n          lower-case-service-id: true\r\n\r\n\r\neureka:\r\n  client:\r\n    service-url:\r\n      defaultZone: http://discovery-server:8761/eureka/\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/resources/application.yml b/api-gateway/src/main/resources/application.yml
+--- a/api-gateway/src/main/resources/application.yml	(revision e1679adacacf41276049901d554b6f3a0d22c65e)
++++ b/api-gateway/src/main/resources/application.yml	(date 1762970223252)
+@@ -16,6 +16,10 @@
+             uri: lb://payment-service
+             predicates:
+               - Path=/api/payment/**
++          - id: filter-service
++            uri: lb://filter-service
++            predicates:
++              - Path=/api/filter/**
+       discovery:
+         locator:
+           enabled: true
