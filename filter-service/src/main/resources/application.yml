@@ -14,8 +14,7 @@ eureka:
 spring:
   data:
     mongodb:
-      database: filterdb
-      uri: mongodb://mongo:27017
+      uri: mongodb://mongo:27017/filterdb
     redis:
       host: redis
   application:
