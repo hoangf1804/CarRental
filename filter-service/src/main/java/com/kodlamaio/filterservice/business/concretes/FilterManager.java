@@ -18,12 +18,13 @@ import java.util.List;
 public class FilterManager implements FilterService {
     private final FilterRepository repository;
     private final FilterBusinessRules rules;
+    private final ModelMapperService mapper;
 
     @Override
     public GetFilterResponse getByPlate(String plate) {
         rules.checkIfExistByPlate(plate);
         Filter filter = repository.findByPlateIgnoreCase(plate);
-        GetFilterResponse response = forResponse().map(filter, GetFilterResponse.class);
+        GetFilterResponse response = mapper.forResponse().map(filter, GetFilterResponse.class);
 
         return response;
     }

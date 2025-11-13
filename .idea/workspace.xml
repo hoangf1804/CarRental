@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="khởi tạo service payment cấu hình port cho service">
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/api/controllers/FiltersController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/abstracts/FilterService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/concretes/FilterManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/dto/responses/GetAllFiltersResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/dto/responses/GetFilterResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/rules/FilterBusinessRules.java" afterDir="false" />
+    <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="thêm các lớp service cho module Filter">
+      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/configuration/mappers/ModelMapperConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/concretes/FilterManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/business/concretes/FilterManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -249,7 +245,8 @@
       <workItem from="1762513103267" duration="622000" />
       <workItem from="1762561043416" duration="186000" />
       <workItem from="1762917127326" duration="318000" />
-      <workItem from="1762969784993" duration="1226000" />
+      <workItem from="1762969784993" duration="1742000" />
+      <workItem from="1762996478974" duration="790000" />
     </task>
     <task id="LOCAL-00001" summary="khởi tạo service payment cấu hình port cho service">
       <option name="closed" value="true" />
@@ -275,7 +272,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762355270989</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="thêm các lớp service cho module Filter">
+      <option name="closed" value="true" />
+      <created>1762971290740</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1762971290740</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -294,6 +299,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="khởi tạo service payment cấu hình port cho service" />
-    <option name="LAST_COMMIT_MESSAGE" value="khởi tạo service payment cấu hình port cho service" />
+    <MESSAGE value="thêm các lớp service cho module Filter" />
+    <option name="LAST_COMMIT_MESSAGE" value="thêm các lớp service cho module Filter" />
   </component>
 </project>
