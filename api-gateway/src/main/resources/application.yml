@@ -20,6 +20,14 @@ spring:
             uri: lb://filter-service
             predicates:
               - Path=/api/filter/**
+          - id: invoice-service
+            uri: lb://invoice-service
+            predicates:
+              - Path=/api/invoice/**
+          - id: inventory-service
+            uri: lb://inventory-service
+            predicates:
+              - Path=/api/inventory/**
       discovery:
         locator:
           enabled: true
