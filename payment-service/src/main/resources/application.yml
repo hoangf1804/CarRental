@@ -2,7 +2,6 @@ server:
   port: 8082
 
 eureka:
-
   client:
     fetchRegistry: true
     registerWithEureka: true
@@ -22,7 +21,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://keycloak:8085/auth/realms/RentACarMicroservice/protocol/openid-connect/certs
+          jwk-set-uri: http://keycloak:8080/realms/RentACarMicroservice/protocol/openid-connect/certs
   zipkin:
     base-url: http://zipkin:9411
   datasource:

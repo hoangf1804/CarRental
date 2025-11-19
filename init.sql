@@ -1,0 +1,4 @@
+CREATE DATABASE inventorydb;
+CREATE DATABASE invoicedb;
+CREATE DATABASE rentaldb;
+CREATE DATABASE paymentdb;
