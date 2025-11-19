@@ -1,116 +1,99 @@
-package com.kodlamaio.filterservice.business.concretes;
+package com.kodlamaio.paymentservice.business.concretes;
 
+import com.kodlamaio.common.dto.CreateRentalPaymentRequest;
+import com.kodlamaio.common.dto.CustomerRequest;
 import com.kodlamaio.common.utils.mapping.ModelMapperService;
-import com.kodlamaio.filterservice.business.abstracts.FilterService;
-import com.kodlamaio.filterservice.business.dto.responses.GetAllFiltersResponse;
-import com.kodlamaio.filterservice.business.dto.responses.GetFilterResponse;
-import com.kodlamaio.filterservice.business.rules.FilterBusinessRules;
-import com.kodlamaio.filterservice.entities.Filter;
-import com.kodlamaio.filterservice.repository.FilterRepository;
+import com.kodlamaio.paymentservice.business.abstracts.PaymentService;
+import com.kodlamaio.paymentservice.business.abstracts.PosService;
+import com.kodlamaio.paymentservice.business.dto.requests.create.CreatePaymentRequest;
+import com.kodlamaio.paymentservice.business.dto.requests.update.UpdatePaymentRequest;
+import com.kodlamaio.paymentservice.business.dto.responses.create.CreatePaymentResponse;
+import com.kodlamaio.paymentservice.business.dto.responses.get.GetAllPaymentsResponse;
+import com.kodlamaio.paymentservice.business.dto.responses.get.GetPaymentResponse;
+import com.kodlamaio.paymentservice.business.dto.responses.update.UpdatePaymentResponse;
+import com.kodlamaio.paymentservice.business.rules.PaymentBusinessRules;
+import com.kodlamaio.paymentservice.entities.Payment;
+import com.kodlamaio.paymentservice.repository.PaymentRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class FilterManager implements FilterService {
-    private final FilterRepository repository;
+public class PaymentManager implements PaymentService {
+    private final PaymentRepository repository;
     private final ModelMapperService mapper;
-    private final FilterBusinessRules rules;
+    private final PosService posService;
+    private final PaymentBusinessRules rules;
 
     @Override
-    public GetFilterResponse getByPlate(String plate) {
-        rules.checkIfExistByPlate(plate);
-        Filter filter = repository.findByPlateIgnoreCase(plate);
-        GetFilterResponse response = mapper.forResponse().map(filter, GetFilterResponse.class);
+    public List<GetAllPaymentsResponse> getAll() {
+        List<Payment> payments = repository.findAll();
+        List<GetAllPaymentsResponse> response = payments
+                .stream()
+                .map(payment -> mapper.forResponse().map(payment, GetAllPaymentsResponse.class))
+                .toList();
 
         return response;
     }
 
     @Override
-    @Cacheable(value = "filters", key = "#root.methodName")
-    public List<GetAllFiltersResponse> getAll() {
-        return findAllAndMapToResponseList(repository.findAll());
+    public GetPaymentResponse getById(String id) {
+        rules.checkIfPaymentExists(id);
+        Payment payment = repository.findById(id).orElseThrow();
+        GetPaymentResponse response = mapper.forResponse().map(payment, GetPaymentResponse.class);
+
+        return response;
     }
 
     @Override
-    public List<GetAllFiltersResponse> getByBrandName(String brandName) {
-        return findAllAndMapToResponseList(repository.findByBrandNameIgnoreCase(brandName));
+    public CreatePaymentResponse add(CreatePaymentRequest request, CustomerRequest customerRequest) {
+        rules.checkIfCardNumberExists(request.getCardNumber());
+        Payment payment = mapper.forRequest().map(request, Payment.class);
+        payment.setId(UUID.randomUUID().toString());
+        setCustomerInformation(customerRequest, payment);
+        repository.save(payment);
+        CreatePaymentResponse response = mapper.forResponse().map(payment, CreatePaymentResponse.class);
+
+        return response;
     }
 
     @Override
-    public List<GetAllFiltersResponse> getByModelName(String modelName) {
-        return findAllAndMapToResponseList(repository.findByModelNameIgnoreCase(modelName));
-    }
+    public UpdatePaymentResponse update(UpdatePaymentRequest request, String id, CustomerRequest customerRequest) {
+        rules.checkIfPaymentExists(id);
+        Payment payment = mapper.forRequest().map(request, Payment.class);
+        payment.setId(id);
+        setCustomerInformation(customerRequest, payment);
+        repository.save(payment);
+        UpdatePaymentResponse response = mapper.forResponse().map(payment, UpdatePaymentResponse.class);
 
-    @Override
-    public List<GetAllFiltersResponse> searchByPlate(String plate) {
-        return findAllAndMapToResponseList(repository.findByPlateContainingIgnoreCase(plate));
-    }
-
-    @Override
-    public List<GetAllFiltersResponse> searchByBrandName(String brandName) {
-        return findAllAndMapToResponseList(repository.findByBrandNameContainingIgnoreCase(brandName));
-    }
-
-    @Override
-    public List<GetAllFiltersResponse> searchByModelName(String modelName) {
-        return findAllAndMapToResponseList(repository.findByModelNameContainingIgnoreCase(modelName));
-    }
-
-    @Override
-    public List<GetAllFiltersResponse> getByModelYear(int modelYear) {
-        return findAllAndMapToResponseList(repository.findByModelYear(modelYear));
-    }
-
-    @Override
-    public List<GetAllFiltersResponse> getByState(int state) {
-        return findAllAndMapToResponseList(repository.findByState(state));
-    }
-
-    @Override
-    public Filter getByCarId(String id) {
-        return repository.findByCarId(id);
-    }
-
-    @Override
-    public List<Filter> getByModelId(String modelId) {
-        return repository.findByModelId(modelId);
-    }
-
-    @Override
-    public List<Filter> getByBrandId(String brandId) {
-        return repository.findByBrandId(brandId);
-    }
-
-    @Override
-    public void save(Filter filter) {
-        repository.save(filter);
+        return response;
     }
 
     @Override
     public void delete(String id) {
-        repository.deleteByCarId(id);
+        rules.checkIfPaymentExists(id);
+        repository.deleteById(id);
     }
 
     @Override
-    public void deleteAllByBrandId(String brandId) {
-        repository.deleteAllByBrandId(brandId);
+    public void processRentalPayment(CreateRentalPaymentRequest request) {
+        rules.checkIfPaymentValid(request);
+        Payment payment = repository.findByCardNumber(request.getCardNumber());
+        double balance = payment.getBalance();
+        rules.checkIfBalanceIsEnough(request, balance);
+        posService.pay(); // Fake payment
+        payment.setBalance(balance - request.getPrice());
+        repository.save(payment);
     }
 
-    @Override
-    public void deleteAllByModelId(String modelId) {
-        repository.deleteAllByModelId(modelId);
-    }
-
-    private List<GetAllFiltersResponse> findAllAndMapToResponseList(List<Filter> repositoryFilterList) {
-        List<GetAllFiltersResponse> response = repositoryFilterList
-                .stream()
-                .map(filter -> mapper.forResponse().map(filter, GetAllFiltersResponse.class))
-                .toList();
-
-        return response;
+    private void setCustomerInformation(CustomerRequest customerRequest, Payment payment) {
+        payment.setCustomerId(customerRequest.getCustomerId());
+        payment.setCustomerUserName(customerRequest.getCustomerUserName());
+        payment.setCustomerFirstName(customerRequest.getCustomerFirstName());
+        payment.setCustomerLastName(customerRequest.getCustomerLastName());
+        payment.setCustomerEmail(customerRequest.getCustomerEmail());
     }
 }
