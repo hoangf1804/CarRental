@@ -143,3 +143,5 @@ public class InventoryConsumer {
         LOGGER.info(Events.Logs.Consumer.Rental.Deleted, event);
     }
 }
+
+
