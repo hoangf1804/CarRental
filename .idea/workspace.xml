@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="thêm các lớp service cho module Filter">
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/configuration/OpenAPIConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/configuration/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="c45f40b4-a39e-482c-af78-7303b6351353" name="Changes" comment="cấu hình security filter-service">
+      <change beforePath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/configuration/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/filter-service/src/main/java/com/kodlamaio/filterservice/configuration/security/SecurityConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -288,7 +286,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763629480058</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="cấu hình security filter-service">
+      <option name="closed" value="true" />
+      <created>1763630421100</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1763630421100</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -308,6 +314,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="khởi tạo service payment cấu hình port cho service" />
     <MESSAGE value="thêm các lớp service cho module Filter" />
-    <option name="LAST_COMMIT_MESSAGE" value="thêm các lớp service cho module Filter" />
+    <MESSAGE value="cấu hình security filter-service" />
+    <option name="LAST_COMMIT_MESSAGE" value="cấu hình security filter-service" />
   </component>
 </project>
