@@ -232,7 +232,7 @@
   volumes:
     postgres-data:
     keycloak_data:
-    mongo-data:
+    mongo-data: 
   
   
   networks:
